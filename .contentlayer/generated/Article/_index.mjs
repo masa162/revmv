@@ -2,8 +2,8 @@
 
 import a001__indexMdx from './a001__index.mdx.json' assert { type: 'json' }
 import a002__indexMdx from './a002__index.mdx.json' assert { type: 'json' }
+import d001__indexMdx from './d001__index.mdx.json' assert { type: 'json' }
 import b001__indexMdx from './b001__index.mdx.json' assert { type: 'json' }
 import c001__indexMdx from './c001__index.mdx.json' assert { type: 'json' }
-import d001__indexMdx from './d001__index.mdx.json' assert { type: 'json' }
 
-export const allArticles = [a001__indexMdx, a002__indexMdx, b001__indexMdx, c001__indexMdx, d001__indexMdx]
+export const allArticles = [a001__indexMdx, a002__indexMdx, d001__indexMdx, b001__indexMdx, c001__indexMdx]

@@ -1,3 +1,11 @@
+/* =========================
+   ArticleCard Component 🛠️
+   Path: src/components/ArticleCard.tsx
+   Project: revmv (Next.js App Router + Contentlayer)
+   Updated: 2025‑06‑23
+   - Cleaned up JSX comments and fixed tag mismatches
+   ========================= */
+
 import Image from "next/image";
 import Link from "next/link";
 import type { Article } from "contentlayer/generated";
@@ -25,12 +33,7 @@ export default function ArticleCard({ article }: Props) {
         <h2 className="mb-2 text-lg font-semibold leading-tight">
           {article.title}
         </h2>
-        {/* 記事概要 (description) は存在する場合のみ表示 */}
-        {"description" in article && article.description && (
-          <p className="line-clamp-2 text-sm text-muted-foreground">
-            {article.description}
-          </p>
-        )}
+        {/* 記事の公開日を表示 */}
         {article.date && (
           <span className="mt-2 inline-block text-xs text-muted-foreground">
             {new Date(article.date).toLocaleDateString()}
