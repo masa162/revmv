@@ -1,41 +1,95 @@
-import { allArticles } from 'contentlayer/generated'
-import { notFound } from 'next/navigation'
-import { Metadata } from 'next'
-import MDXRenderer from '@/components/MDXRenderer'
-import Image from 'next/image'
+/* =========================
+   Article Detail Page (rev.4) 🛠️
+   Project: revmv (Next.js App Router + Contentlayer)
+   Updated: 2025-06-23
+   - Layout grid: Sidebar / Article / PopularRanking
+   - Imported Sidebar & PopularRanking
+   ========================= */
+
+// src/app/articles/[slug]/page.tsx
+import Sidebar from "@/components/Sidebar";
+import PopularRanking from "@/components/PopularRanking";
+import { allArticles } from "contentlayer/generated";
+import { notFound } from "next/navigation";
+import type { Article } from "contentlayer/generated";
+import ArticleContent from "@/components/ArticleContent";
+import Image from "next/image";
+
+interface Params {
+  slug: string;
+}
 
 export async function generateStaticParams() {
-  return allArticles.map((article) => ({ slug: article.slug }))
+  return allArticles.map((a) => ({ slug: a.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const { slug } = await Promise.resolve(params)
-  const article = allArticles.find((a) => a.slug === slug)
-  if (!article) return {}
-  return {
-    title: article.title,
-  }
-}
+export default async function ArticlePage({ params }: { params: Params }) {
+  const { slug } = await params;
+  const article = allArticles.find((a) => a.slug === slug) as Article | undefined;
+  if (!article) notFound();
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const { slug } = await Promise.resolve(params)
-  const article = allArticles.find((a) => a.slug === slug)
-  if (!article) notFound()
+  // Popular ranking data
+  const popularArticles = allArticles
+    .filter((a) => typeof a.views === "number")
+    .sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
+    .slice(0, 10);
 
   return (
-    <article className="prose dark:prose-invert mx-auto px-4">
-      <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+    <main className="grid gap-8 lg:grid-cols-[220px_1fr_260px]">
+      {/* Sidebar */}
+      <aside className="hidden lg:block">
+        <Sidebar />
+      </aside>
 
-      {/* ✅ 画像表示部分をここに配置 */}
-      <Image
-        src={article.image}
-        alt={article.title}
-        width={640}
-        height={360}
-        className="mb-6"
-      />
+      {/* Article Content */}
+      <section>
+        <article className="prose dark:prose-invert mx-auto py-8">
+          <h1>{article.title}</h1>
+          <p className="text-sm text-gray-500">
+            {article.date} {article.author && `｜${article.author}`}
+          </p>
+          <Image
+            src={article.image}
+            alt={article.title}
+            width={800}
+            height={400}
+            className="my-4 rounded"
+          />
+          <ArticleContent code={article.body.code} />
 
-      <MDXRenderer code={article.body.code} />
-    </article>
-  )
+          {/* 前後記事リンク */}
+          <nav className="mt-12 flex justify-between">
+            {(() => {
+              const idx = allArticles.findIndex((a) => a.slug === article.slug);
+              const prev = allArticles[idx + 1];
+              const next = allArticles[idx - 1];
+              return (
+                <>
+                  {prev ? (
+                    <a href={`/articles/${prev.slug}`} className="text-blue-500 hover:underline">
+                      ← {prev.title}
+                    </a>
+                  ) : (
+                    <span />
+                  )}
+                  {next ? (
+                    <a href={`/articles/${next.slug}`} className="text-blue-500 hover:underline">
+                      {next.title} →
+                    </a>
+                  ) : (
+                    <span />
+                  )}
+                </>
+              );
+            })()}
+          </nav>
+        </article>
+      </section>
+
+      {/* Popular Ranking */}
+      <aside className="hidden lg:block">
+        <PopularRanking articles={popularArticles} />
+      </aside>
+    </main>
+  );
 }

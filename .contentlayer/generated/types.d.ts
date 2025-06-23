@@ -17,6 +17,7 @@ export type Article = {
   date: IsoDateTimeString
   author?: string | undefined
   tags?: string[] | undefined
+  views?: number | undefined
   /** MDX file body */
   body: MDX
   slug: string
